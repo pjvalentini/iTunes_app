@@ -51,74 +51,112 @@ pgClient.connect();
 /* <------------------------------------------------------------------> */
 console.log('Welcome to itunes!');
 
-// Check to see if users can sign in or need to sign up.
-inquirer.prompt([
-	{
-		type: 'list',
-		message: 'Sign Up/Sign In',
-		choices: ['Sign Up', 'Sign In'],
-		name: 'sign_choice',
-	},
-]).then((sign) => {
-	// console.log(sign);
-	if (sign.sign_choice === "Sign Up") {
-		console.log("Welcome to iTunes");
-		inquirer.prompt([
-			{
-				type: 'input',
-				message: 'What is your name?',
-				name: 'name',
-			},
-			{
-				type: 'input',
-				message: 'What is your username?',
-				name: 'username',
-			},
-			{
-				type: 'password',
-				message: 'What is your password?',
-				name: 'password',
-			},
-		]).then((signup) => {
-			// console.log(signup);
-			pgClient.query('INSERT INTO users (name, username, password) VALUES ($1, $2, $3)', [signup.name, signup.username, signup.password], (err, result) => {
-				// console.log(result);
+var signUp = () => {
+	// Check to see if users can sign in or need to sign up.
+	inquirer.prompt([
+		{
+			type: 'list',
+			message: 'Sign Up/Sign In',
+			choices: ['Sign Up', 'Sign In'],
+			name: 'sign_choice',
+		},
+	]).then((sign) => {
+		// console.log(sign);
+		if (sign.sign_choice === "Sign Up") {
+			console.log("Welcome to iTunes");
+			inquirer.prompt([
+				{
+					type: 'input',
+					message: 'What is your name?',
+					name: 'name',
+				},
+				{
+					type: 'input',
+					message: 'What is your username?',
+					name: 'username',
+				},
+				{
+					type: 'password',
+					message: 'What is your password?',
+					name: 'password',
+				},
+			]).then((signup) => {
+				// console.log(signup);
+				pgClient.query('INSERT INTO users (name, username, password) VALUES ($1, $2, $3)', [signup.name, signup.username, signup.password], (err, result) => {
+					// console.log(result);
+					// if (err) {
+					// 	console.log(err);
+					// }
+					console.log('Thank you for signing up. Please sign in now');
+					signUp();
+				});
+			});
+		} else {
+			inquirer.prompt([
+				{
+					type: "input",
+					message: "What is your username?",
+					name: "username",
+				},
+				{
+					type: "password",
+					message: "What is your password?",
+					name: "password",
+				},
+			]).then((res) => {
+				// console.log(res);
 				// if (err) {
 				// 	console.log(err);
 				// }
-				console.log('Thank you for signing up. Please sign in now');
-			});
-		});
-	} else {
-		inquirer.prompt([
-			{
-				type: "input",
-				message: "What is your username?",
-				name: "username",
-			},
-			{
-				type: "password",
-				message: "What is your password?",
-				name: "password",
-			},
-		]).then((res) => {
-			// console.log(res);
-			// if (err) {
-			// 	console.log(err);
-			// }
-		pgClient.query(`SELECT * FROM users WHERE username='${res.username}'`, (err, result) => {
-			if (result.rows.length > 0) {
-				if (result.rows[0].password === res.password) {
-					console.log('Welcome to iTunes ' + result.rows[0].name);
+		var runSignIn = () =>	{
+			pgClient.query(`SELECT * FROM users WHERE username='${res.username}'`, (err, result) => {
+				if (result.rows.length > 0) {
+					if (result.rows[0].password === res.password) {
+						console.log('Welcome to iTunes ' + result.rows[0].name);
+						var goBack = () => {
+							inquirer.prompt([
+								{
+									type: 'list',
+									message: 'Please Choose?',
+									choices: ['View Purchased Songs', 'Buy Songs'],
+									name: 'selection',
+								},
+							]).then(function(resTwo) {
+								console.log(resTwo);
+								if (resTwo.selection === 'View Purchased Songs') {
+									console.log('Welcome ' + result.rows[0].name + '. Here are your purchased songs!');
+									pgClient.query('SELECT songs.song_name FROM songs INNER JOIN bought_songs ON bought_songs.song_id=songs.id WHERE bought_songs.user_id=' + result.rows[0].id, (error, queryResTwo) => {
+										console.log(queryResTwo);
+										if (error) {
+											console.log(error);
+										}
+										if (queryResTwo.rows.length > 0) {
+											for (var i = 0; i < queryResTwo.rows.length; i++) {
+                    		console.log((i + 1) + ". " + queryResTwo.rows[i].song_name);
+											}
+											goBack();
+										} else {
+											console.log('You Do not have any songs yet!');
+											goBack();
+										}
+									});
+								}
+							});
+						};
+						goBack();
+					} else {
+						console.log('incorrect Password!');
+						signUp();
+					}
 				} else {
-					console.log('incorrect Password!');
-					pgClient.end();
+					console.log('username does not exist!');
+					signUp();
 				}
-			} else {
-				console.log('username does not exist!');
-				pgClient.end();
-			}
-		});
-	 });
-	}
-});
+			 });
+		 	};
+		 runSignIn();
+		 });
+		}
+	});
+};
+signUp();
