@@ -122,7 +122,7 @@ var signUp = () => {
 									name: 'selection',
 								},
 							]).then(function(resTwo) {
-								console.log(resTwo);
+									// console.log(resTwo);
 								if (resTwo.selection === 'View Purchased Songs') {
 									console.log('Welcome ' + result.rows[0].name + '. Here are your purchased songs!');
 									pgClient.query('SELECT songs.song_name FROM songs INNER JOIN bought_songs ON bought_songs.song_id=songs.id WHERE bought_songs.user_id=' + result.rows[0].id, (error, queryResTwo) => {
@@ -132,12 +132,41 @@ var signUp = () => {
 										// }
 										if (queryResTwo.rows.length > 0) {
 											for (var i = 0; i < queryResTwo.rows.length; i++) {
-                    		console.log((i + 1) + ". " + queryResTwo.rows[i].song_name);
+												console.log((i + 1) + ". " + queryResTwo.rows[i].song_name);
 											}
 											goBack();
 										} else {
-											console.log('You Do not have any songs yet! Add credits to your balance');
-											goBack();
+											// this puts the songs in an array to view, in Terminal
+											pgClient.query('SELECT * FROM songs', (error, queryResTwo) => {
+												// console.log(queryResTwo);
+												// if (error) {
+												// 	console.log(error);
+												// }
+												var songs = [];
+												queryResTwo.rows.forEach((s) => {
+													songs.push(s.song_name + " : " + s.song_artist + " - price: " + s.price);
+												});
+												inquirer.prompt([
+													{
+														type: 'list',
+														message: 'Please choose a song',
+														choices: songs,
+														name: 'song',
+													},
+												]).then((songs_list) => {
+														// console.log(songs_list);
+														var song_id;
+														queryResTwo.rows.forEach((s) => {
+															if (s.song_name === songs_list.song_name) {
+																song_id = s.id;
+																// console.log(s.id);
+															} else {
+																console.log('You Do not have any songs yet! Add credits to your balance');
+																goBack();
+															}
+														});
+												});
+											});
 										}
 									});
 								} else {
@@ -149,6 +178,7 @@ var signUp = () => {
 										},
 									]).then((update_balance) => {
 										// console.log(update_balance);
+										goBack();
 									});
 								}
 							});
@@ -163,7 +193,7 @@ var signUp = () => {
 					signUp();
 				}
 			 });
-		 	};
+			};
 		 runSignIn();
 		 });
 		}
