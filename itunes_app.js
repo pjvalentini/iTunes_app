@@ -118,7 +118,7 @@ var signUp = () => {
 								{
 									type: 'list',
 									message: 'Please Choose?',
-									choices: ['View Purchased Songs', 'Buy Songs'],
+									choices: ['View Purchased Songs', 'Buy Songs', 'Add To Your Balance'],
 									name: 'selection',
 								},
 							]).then(function(resTwo) {
@@ -126,19 +126,29 @@ var signUp = () => {
 								if (resTwo.selection === 'View Purchased Songs') {
 									console.log('Welcome ' + result.rows[0].name + '. Here are your purchased songs!');
 									pgClient.query('SELECT songs.song_name FROM songs INNER JOIN bought_songs ON bought_songs.song_id=songs.id WHERE bought_songs.user_id=' + result.rows[0].id, (error, queryResTwo) => {
-										console.log(queryResTwo);
-										if (error) {
-											console.log(error);
-										}
+										// console.log(queryResTwo);
+										// if (error) {
+										// 	console.log(error);
+										// }
 										if (queryResTwo.rows.length > 0) {
 											for (var i = 0; i < queryResTwo.rows.length; i++) {
                     		console.log((i + 1) + ". " + queryResTwo.rows[i].song_name);
 											}
 											goBack();
 										} else {
-											console.log('You Do not have any songs yet!');
+											console.log('You Do not have any songs yet! Add credits to your balance');
 											goBack();
 										}
+									});
+								} else {
+									inquirer.prompt([
+										{
+											type: "input",
+											message: "how much would you like to add to your balance?",
+											name: "update_value",
+										},
+									]).then((update_balance) => {
+										// console.log(update_balance);
 									});
 								}
 							});
