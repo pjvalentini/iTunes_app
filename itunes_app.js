@@ -113,6 +113,7 @@ var signUp = () => {
 				if (result.rows.length > 0) {
 					if (result.rows[0].password === res.password) {
 						console.log('Welcome to iTunes ' + result.rows[0].name);
+// THE APP RUNS FINE UP UNTIL HERE....
 						var goBack = () => {
 							inquirer.prompt([
 								{
@@ -123,6 +124,8 @@ var signUp = () => {
 								},
 							]).then(function(resTwo) {
 									// console.log(resTwo);
+// VIEW PURCHASED SONGS SHOULD RETURN NOTHING RIGHT NOW...BUT ITS RETRUNING MY SONG LIST BEFORE USER CAN ADD TO BALANCE.
+// ALL USERS HAVE A 0 BALACE AT THIS POINT...
 								if (resTwo.selection === 'View Purchased Songs') {
 									console.log('Welcome ' + result.rows[0].name + '. Here are your purchased songs!');
 									pgClient.query('SELECT songs.song_name FROM songs INNER JOIN bought_songs ON bought_songs.song_id=songs.id WHERE bought_songs.user_id=' + result.rows[0].id, (error, queryResTwo) => {
@@ -142,9 +145,11 @@ var signUp = () => {
 												// if (error) {
 												// 	console.log(error);
 												// }
+				// ! Here im using a forEach but my song list keeps repeating and its popping up when is click View Purchased songs...
+				// ALSO the id numbers are out of order for some reason...
 												var songs = [];
 												queryResTwo.rows.forEach((s) => {
-													songs.push(s.song_name + " : " + s.song_artist + " - price: " + s.price);
+													songs.push(s.id + ". " + s.song_name + " : " + s.song_artist + " - price: " + s.price);
 												});
 												inquirer.prompt([
 													{
@@ -161,8 +166,10 @@ var signUp = () => {
 																song_id = s.id;
 																// console.log(s.id);
 															} else {
-																console.log('You Do not have any songs yet! Add credits to your balance');
-																goBack();
+																if (songs < 0) {
+																	console.log('You Do not have any songs yet! Add credits to your balance');
+																	goBack();
+																}
 															}
 														});
 												});
@@ -170,6 +177,7 @@ var signUp = () => {
 										}
 									});
 								} else {
+		// NOT SURE WHERE TO PUT THIS...THE APP SHOULD RUN LIKE YOUR APP DOES...THAT IS THE MOST LOGICAL FLOW.
 									inquirer.prompt([
 										{
 											type: "input",
@@ -177,7 +185,7 @@ var signUp = () => {
 											name: "update_value",
 										},
 									]).then((update_balance) => {
-										// console.log(update_balance);
+
 										goBack();
 									});
 								}
