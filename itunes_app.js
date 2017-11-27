@@ -126,19 +126,19 @@ var signUp = () => {
 								if (resTwo.selection === 'View Purchased Songs') {
 									console.log('Welcome ' + result.rows[0].name + '. Here are your purchased songs!');
 									pgClient.query('SELECT songs.song_name FROM songs INNER JOIN bought_songs ON bought_songs.song_id=songs.id WHERE bought_songs.user_id=' + result.rows[0].id, (error, queryResTwo) => {
-										// console.log(queryResTwo);
-										// if (error) {
-										// 	console.log(error);
-										// }
-											if (queryResTwo.rows.length > 0) {
-												for (var i = 0; i < queryResTwo.rows.length; i++) {
-													console.log((i + 1) + ". " + queryResTwo.rows[i].song_name);
-												}
-												goBack();
-										} else {
-												console.log("You dont have any songs yet!");
-												goBack();
+										console.log(queryResTwo);
+										if (error) {
+											console.log(error);
+										}
+										if (queryResTwo.rows.length > 0) {
+											for (var i = 0; i < queryResTwo.rows.length; i++) {
+											console.log((i + 1) + ". " + queryResTwo.rows[i].song_name);
 											}
+											goBack();
+										} else {
+											console.log("You dont have any songs yet!");
+											goBack();
+										}
 											// this puts the songs in an array to view, in Termina
 									});
 								} else {
@@ -149,7 +149,7 @@ var signUp = () => {
 										// }
 										var songs = [];
 										queryResThree.rows.forEach((songList) => {
-											songs.push(songList.song_name);
+											songs.push(songList.id + ". " + songList.song_name + " - " + songList.song_artist);
 										});
 										inquirer.prompt([
 											{
