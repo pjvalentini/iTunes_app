@@ -113,19 +113,16 @@ var signUp = () => {
 				if (result.rows.length > 0) {
 					if (result.rows[0].password === res.password) {
 						console.log('Welcome to iTunes ' + result.rows[0].name);
-// THE APP RUNS FINE UP UNTIL HERE....
 						var goBack = () => {
 							inquirer.prompt([
 								{
 									type: 'list',
 									message: 'Please Choose?',
-									choices: ['View Purchased Songs', 'Buy Songs', 'Add To Your Balance'],
+									choices: ['View Purchased Songs', 'Buy Songs'],
 									name: 'selection',
 								},
 							]).then(function(resTwo) {
 									// console.log(resTwo);
-// VIEW PURCHASED SONGS SHOULD RETURN NOTHING RIGHT NOW...BUT ITS RETRUNING MY SONG LIST BEFORE USER CAN ADD TO BALANCE.
-// ALL USERS HAVE A 0 BALACE AT THIS POINT...
 								if (resTwo.selection === 'View Purchased Songs') {
 									console.log('Welcome ' + result.rows[0].name + '. Here are your purchased songs!');
 									pgClient.query('SELECT songs.song_name FROM songs INNER JOIN bought_songs ON bought_songs.song_id=songs.id WHERE bought_songs.user_id=' + result.rows[0].id, (error, queryResTwo) => {
@@ -133,60 +130,49 @@ var signUp = () => {
 										// if (error) {
 										// 	console.log(error);
 										// }
-										if (queryResTwo.rows.length > 0) {
-											for (var i = 0; i < queryResTwo.rows.length; i++) {
-												console.log((i + 1) + ". " + queryResTwo.rows[i].song_name);
-											}
-											goBack();
+											if (queryResTwo.rows.length > 0) {
+												for (var i = 0; i < queryResTwo.rows.length; i++) {
+													console.log((i + 1) + ". " + queryResTwo.rows[i].song_name);
+												}
+												goBack();
 										} else {
-											// this puts the songs in an array to view, in Terminal
-											pgClient.query('SELECT * FROM songs', (error, queryResTwo) => {
-												// console.log(queryResTwo);
-												// if (error) {
-												// 	console.log(error);
-												// }
-				// ! Here im using a forEach but my song list keeps repeating and its popping up when is click View Purchased songs...
-				// ALSO the id numbers are out of order for some reason...
-												var songs = [];
-												queryResTwo.rows.forEach((s) => {
-													songs.push(s.id + ". " + s.song_name + " : " + s.song_artist + " - price: " + s.price);
-												});
-												inquirer.prompt([
-													{
-														type: 'list',
-														message: 'Please choose a song',
-														choices: songs,
-														name: 'song',
-													},
-												]).then((songs_list) => {
-														// console.log(songs_list);
-														var song_id;
-														queryResTwo.rows.forEach((s) => {
-															if (s.song_name === songs_list.song_name) {
-																song_id = s.id;
-																// console.log(s.id);
-															} else {
-																if (songs < 0) {
-																	console.log('You Do not have any songs yet! Add credits to your balance');
-																	goBack();
-																}
-															}
-														});
-												});
-											});
-										}
+												console.log("You dont have any songs yet!");
+												goBack();
+											}
+											// this puts the songs in an array to view, in Termina
 									});
 								} else {
-		// NOT SURE WHERE TO PUT THIS...THE APP SHOULD RUN LIKE YOUR APP DOES...THAT IS THE MOST LOGICAL FLOW.
-									inquirer.prompt([
-										{
-											type: "input",
-											message: "how much would you like to add to your balance?",
-											name: "update_value",
-										},
-									]).then((update_balance) => {
-
-										goBack();
+									pgClient.query('SELECT * FROM songs', (errorThree, queryResThree) => {
+										// console.log(queryResThree);
+										// if (error) {
+										// 	console.log(errorThree);
+										// }
+										var songs = [];
+										queryResThree.rows.forEach((songList) => {
+											songs.push(songList.song_name);
+										});
+										inquirer.prompt([
+											{
+												type: 'list',
+												message: 'Please choose a song',
+												choices: songs,
+												name: 'song',
+											},
+										]).then((songs_list) => {
+												// console.log(songs_list);
+												var song_id;
+												queryResThree.rows.forEach((songList) => {
+													if (songList.song_name === songs_list.song_name) {
+														song_id = songList.id;
+														// console.log(s.id);
+														goBack();
+													}
+												});
+												pgClient.query("INSERT INTO bought_songs (song_id, user_id) VALUES ($1, $2)", [result.rows[0].id, song_id], (errFour, resFour) => {
+										    	console.log("you bought a song");
+										    	goBack();
+												});
+										});
 									});
 								}
 							});
