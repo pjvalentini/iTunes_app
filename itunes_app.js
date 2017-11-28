@@ -167,11 +167,12 @@ var signUp = () => {
 												queryResThree.rows.forEach((songList) => {
 													if (songList.song_name === songs_list.song) {
 														song_id = songList.id;
+														// console.log(song_id); logs the id of the song that was bought.
 													}
 												});
 												pgClient.query("INSERT INTO bought_songs (user_id, song_id) VALUES ($1, $2)", [result.rows[0].id, song_id], (errFour, resFour) => {
-													console.log(resFour); // Confirms insert for current popuplated users...but not working properly.
-													if (errFour) throw (errFour); // ERROR, when trying to buy a song as a new user: FOREIGN KEY Constaint violation on bought_songs.
+													console.log(resFour); // Confirms insert into users table.
+													if (errFour) throw (errFour); //  NO ERROR
 													console.log("You bought a song!");
 													goBack();
 												});
