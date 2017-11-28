@@ -151,7 +151,7 @@ var signUp = () => {
 										// }
 										var songs = [];
 										queryResThree.rows.forEach((songList) => {
-											songs.push(songList.id + ". " + songList.song_name + " - " + songList.song_artist + " - " + songList.price);
+											songs.push(songList.song_name);
 											// console.log(songList); Shows me my list of songs from songs table
 										});
 										inquirer.prompt([
@@ -165,12 +165,10 @@ var signUp = () => {
 												// console.log(songs_list); Nothing to console ?
 												var song_id;
 												queryResThree.rows.forEach((songList) => {
-													if (songList.song_name === songs_list.song_name) {
 														song_id = songList.id;
 														// console.log(song_id); Nothing to console ?
-													}
 												});
-												pgClient.query("INSERT INTO bought_songs (song_id, user_id) VALUES ($1, $2)", [result.rows[0].id, song_id], (errFour, resFour) => {
+												pgClient.query("INSERT INTO bought_songs (user_id, song_id) VALUES ($1, $2)", [result.rows[0].id, song_id], (errFour, resFour) => {
 													// console.log(resFour); // Confirms insert for current popuplated users...but not working properly.
 													// if (errFour) throw (errFour); // ERROR, when trying to buy a song as a new user: FOREIGN KEY Constaint violation on bought_songs.
 													console.log("You bought a song!");
