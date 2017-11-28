@@ -24,4 +24,7 @@ This is a command line itunes application using node and postgreSQL Database
     - 3. Buy songs will prompt a list of available songs. Select one and you bought it!
     - 4. After Purchase of songs you will be prompted to view the songs you bought.
     - 5. Select View Purchased Songs and you will see what you have bought and the bought_songs table
-         will update. 
+         will update.
+
+ * To Run the app:
+    - type: node itunes_app.js

@@ -106,10 +106,10 @@ var signUp = () => {
 					name: "password",
 				},
 			]).then((res) => {
-				// console.log(res); Shows me the username ans password after sign in....
+				// console.log(res); Shows me the username ans password after sign in.
 		var runSignIn = () =>	{
 			pgClient.query(`SELECT * FROM users WHERE username='${res.username}'`, (err, result) => {
-				// console.log(res); Shows me the username ans password after sign in....
+				// console.log(res); Shows me the username ans password after sign in.
 				// if (err) {
 				// 	console.log(err); - NO ERROR
 				// }
@@ -171,8 +171,8 @@ var signUp = () => {
 													}
 												});
 												pgClient.query("INSERT INTO bought_songs (user_id, song_id) VALUES ($1, $2)", [result.rows[0].id, song_id], (errFour, resFour) => {
-													console.log(resFour); // Confirms insert into users table.
-													if (errFour) throw (errFour); //  NO ERROR
+													// console.log(resFour); // Confirms insert into users table.
+													// if (errFour) throw (errFour); //  NO ERROR
 													console.log("You bought a song!");
 													goBack();
 												});
