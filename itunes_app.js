@@ -84,7 +84,7 @@ var signUp = () => {
 				},
 			]).then((signup) => {
 				// console.log(signup); Shows that "Sign Up" has been selected from the choices.
- 				pgClient.query('INSERT INTO users (name, username, password) VALUES ($1, $2, $3)', [signup.name, signup.username, signup.password], (err, result) => {
+				pgClient.query('INSERT INTO users (name, username, password) VALUES ($1, $2, $3)', [signup.name, signup.username, signup.password], (err, result) => {
 					// console.log(result); Shows me the that the insert of a new user in the users table is confirmed.
 					// if (err) {
 					// 	console.log(err); - NO ERROR
@@ -162,21 +162,22 @@ var signUp = () => {
 												name: 'song',
 											},
 										]).then((songs_list) => {
-												// console.log(songs_list); Nothing to console ?
+												// console.log(songs_list); Logs the song that was purchased
 												var song_id;
 												queryResThree.rows.forEach((songList) => {
+													if (songList.song_name === songs_list.song) {
 														song_id = songList.id;
-														// console.log(song_id); Nothing to console ?
+													}
 												});
 												pgClient.query("INSERT INTO bought_songs (user_id, song_id) VALUES ($1, $2)", [result.rows[0].id, song_id], (errFour, resFour) => {
-													// console.log(resFour); // Confirms insert for current popuplated users...but not working properly.
-													// if (errFour) throw (errFour); // ERROR, when trying to buy a song as a new user: FOREIGN KEY Constaint violation on bought_songs.
+													console.log(resFour); // Confirms insert for current popuplated users...but not working properly.
+													if (errFour) throw (errFour); // ERROR, when trying to buy a song as a new user: FOREIGN KEY Constaint violation on bought_songs.
 													console.log("You bought a song!");
-										    	goBack();
+													goBack();
 												});
-										});
-									});
-								}
+										 });
+									 });
+								 }
 							});
 						};
 						goBack();
@@ -189,8 +190,8 @@ var signUp = () => {
 					signUp();
 				}
 			 });
-			};
-		 	runSignIn();
+		  };
+				runSignIn();
 		 });
 		}
 	});
