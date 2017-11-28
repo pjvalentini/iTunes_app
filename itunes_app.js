@@ -2,22 +2,22 @@
 Create a database called itunes.
 
 Have 3 tables:
-A pre-populated songs table - DONE
-Columns: id, song_title, song_artist - DONE
-A users table - DONE
-Columns: id, name, username, password - DONE
-A pivot table which stores what songs people have bought - DONE
-Columns: id, song_id, user_id - DONE
-Pre-populate a songs table. - DONE
+A pre-populated songs table
+Columns: id, song_title, song_artist
+A users table
+Columns: id, name, username, password
+A pivot table which stores what songs people have bought
+Columns: id, song_id, user_id
+Pre-populate a songs table.
 Start off with Inquirer: This is where you will create your username if it does not exist in the database
-Inquirer should prompt: Sign Up/Sign in - DONE
-The sign in should check username and password. - DONE
-If the username is not in the database, then you can tell the client to sign up and close the connection. - DONE
-If the username is in the database, then prompt them to enter their password. - DONE
-If the password matches the user's account, then prompt them either: - DONE
-If they would like to add a song - DONE
-Have it prompt what songs are available - DONE
-Ask them what song they would like to add - DONE
+Inquirer should prompt: Sign Up/Sign in
+The sign in should check username and password.
+If the username is not in the database, then you can tell the client to sign up and close the connection.
+If the username is in the database, then prompt them to enter their password.
+If the password matches the user's account, then prompt them either:
+If they would like to add a song
+Have it prompt what songs are available
+Ask them what song they would like to add
 Check the songs that they have
 Get their songs from the database
 Bonus
@@ -83,11 +83,11 @@ var signUp = () => {
 					name: 'password',
 				},
 			]).then((signup) => {
-				// console.log(signup);
-				pgClient.query('INSERT INTO users (name, username, password) VALUES ($1, $2, $3)', [signup.name, signup.username, signup.password], (err, result) => {
-					// console.log(result);
+				// console.log(signup); Shows that "Sign Up" has been selected from the choices.
+ 				pgClient.query('INSERT INTO users (name, username, password) VALUES ($1, $2, $3)', [signup.name, signup.username, signup.password], (err, result) => {
+					// console.log(result); Shows me the that the insert of a new user in the users table is confirmed.
 					// if (err) {
-					// 	console.log(err);
+					// 	console.log(err); - NO ERROR
 					// }
 					console.log('Thank you for signing up. Please sign in now');
 					signUp();
@@ -106,12 +106,12 @@ var signUp = () => {
 					name: "password",
 				},
 			]).then((res) => {
-				// console.log(res);
+				// console.log(res); Shows me the username ans password after sign in....
 		var runSignIn = () =>	{
 			pgClient.query(`SELECT * FROM users WHERE username='${res.username}'`, (err, result) => {
-				// console.log(res);
+				// console.log(res); Shows me the username ans password after sign in....
 				// if (err) {
-				// 	console.log(err);
+				// 	console.log(err); - NO ERROR
 				// }
 				if (result.rows.length > 0) {
 					if (result.rows[0].password === res.password) {
@@ -125,13 +125,13 @@ var signUp = () => {
 									name: 'selection',
 								},
 							]).then(function(resTwo) {
-									// console.log(resTwo);
+									// console.log(resTwo); Shows me the selction I have made from the choices.
 								if (resTwo.selection === 'View Purchased Songs') {
 									console.log('Welcome ' + result.rows[0].name + '. Here are your purchased songs!');
 									pgClient.query('SELECT songs.song_name FROM songs INNER JOIN bought_songs ON bought_songs.song_id=songs.id WHERE bought_songs.user_id=' + result.rows[0].id, (error, queryResTwo) => {
-										// console.log(queryResTwo);
+										// console.log(queryResTwo); Shows me that there are no songs purchased and confims a command: SELECT.
 										// if (error) {
-										// 	console.log(error);
+										// 	console.log(error); - NO ERROR
 										// }
 										if (queryResTwo.rows.length > 0) {
 											for (var i = 0; i < queryResTwo.rows.length; i++) {
@@ -144,10 +144,10 @@ var signUp = () => {
 										}
 									});
 								} else {
-									pgClient.query('SELECT * FROM songs', (errorThree, queryResThree) => {
-										// console.log(queryResThree);
+										pgClient.query('SELECT * FROM songs', (errorThree, queryResThree) => {
+										// console.log(queryResThree); Shows me my song list.
 										// if (errorThree) {
-										// 	console.log(errorThree);
+										// 	console.log(errorThree); - NO ERROR
 										// }
 										var songs = [];
 										queryResThree.rows.forEach((songList) => {
@@ -162,17 +162,17 @@ var signUp = () => {
 												name: 'song',
 											},
 										]).then((songs_list) => {
-												// console.log(songs_list);
+												// console.log(songs_list); Nothing to console ?
 												var song_id;
 												queryResThree.rows.forEach((songList) => {
 													if (songList.song_name === songs_list.song_name) {
 														song_id = songList.id;
-														console.log(song_id);
+														// console.log(song_id); Nothing to console ?
 													}
 												});
 												pgClient.query("INSERT INTO bought_songs (song_id, user_id) VALUES ($1, $2)", [result.rows[0].id, song_id], (errFour, resFour) => {
-													// console.log(resFour);
-													// if (errFour) throw (errFour);
+													// console.log(resFour); // Confirms insert for current popuplated users...but not working properly.
+													// if (errFour) throw (errFour); // ERROR, when trying to buy a song as a new user...
 													console.log("You bought a song!");
 										    	goBack();
 												});
