@@ -26,7 +26,8 @@ Create a bank table:
 id, balance, user_id
 Every time a user account is created, a bank record is created for that user
 Add a column to your songs table called 'amount' which will be an INT and give each song a price
-When the user add's a song, have it deduce the amount that the song is priced at from the user's balance in the bank table.
+When the user add's a song, have it deduce the amount that the song is priced
+at from the user's balance in the bank table.
 */
 
 // set up our modules to require.
@@ -60,10 +61,11 @@ var signUp = () => {
 			choices: ['Sign Up', 'Sign In'],
 			name: 'sign_choice',
 		},
-	]).then((sign) => {
-		// console.log(sign);
-		if (sign.sign_choice === "Sign Up") {
+	]).then((signIn) => {
+		// console.log(signIn); Shows me that "Sign In" is the confirmed choice.
+		if (signIn.sign_choice === "Sign Up") {
 			console.log("Welcome to iTunes");
+	// this prompt sets us the Sign Up feature of the app.
 			inquirer.prompt([
 				{
 					type: 'input',
@@ -149,7 +151,8 @@ var signUp = () => {
 										// }
 										var songs = [];
 										queryResThree.rows.forEach((songList) => {
-											songs.push(songList.id + ". " + songList.song_name + " - " + songList.song_artist);
+											songs.push(songList.id + ". " + songList.song_name + " - " + songList.song_artist + " - " + songList.price);
+											// console.log(songList); Shows me my list of songs from songs table
 										});
 										inquirer.prompt([
 											{
